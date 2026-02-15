@@ -1,0 +1,42 @@
+.hint {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  border-color: #2563eb;
+  background: #f8fafc;
+}
+
+.icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.or {
+  color: #999;
+  margin: 16px 0;
+}
+
+.fileButton {
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.fileButton:hover {
+  background: #1d4ed8;
+}

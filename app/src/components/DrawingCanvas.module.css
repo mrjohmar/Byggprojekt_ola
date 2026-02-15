@@ -1,0 +1,23 @@
+.hint {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.canvasWrapper {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.canvas {
+  display: block;
+  max-width: 100%;
+  cursor: crosshair;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}

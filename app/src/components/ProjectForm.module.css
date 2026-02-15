@@ -1,0 +1,63 @@
+.field {
+  margin-bottom: 24px;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 16px;
+  background: #e2e8f0;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  color: #333;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip:hover {
+  background: #cbd5e1;
+}
+
+.chip.active {
+  background: #dbeafe;
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+.dimensions {
+  display: flex;
+  gap: 16px;
+}
+
+.dimensions > div {
+  flex: 1;
+}
+
+.dimensions span {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.dimensions input {
+  margin-bottom: 0;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
