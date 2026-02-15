@@ -69,8 +69,8 @@ export async function inpaintWithStability(params: InpaintParams): Promise<strin
 
     // Skapa FormData för API-anrop
     const formData = new FormData()
-    formData.append('image', new Blob([processedImage], { type: 'image/png' }), 'image.png')
-    formData.append('mask', new Blob([maskBuffer], { type: 'image/png' }), 'mask.png')
+    formData.append('image', new Blob([new Uint8Array(processedImage)], { type: 'image/png' }), 'image.png')
+    formData.append('mask', new Blob([new Uint8Array(maskBuffer)], { type: 'image/png' }), 'mask.png')
     formData.append('prompt', fullPrompt)
     formData.append('output_format', 'png')
 
