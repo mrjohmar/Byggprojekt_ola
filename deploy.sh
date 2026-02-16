@@ -11,7 +11,7 @@ VPS_USER="deploy"              # Låt vara
 GITHUB_REPO=""                 # t.ex. "dittnamn/minapp" (tomt = skapa nytt)
 APP_PORT="3001"                # Unikt per app: 3001, 3002, 3003...
 APP_SUBDIR="app"                         # Undermapp där appen ligger (tomt = rot)
-NEEDS_DB="true"                # "true" för Postgres
+NEEDS_DB="false"               # "true" för Postgres
 NEEDS_REDIS="false"            # "true" för Redis
 BASIC_AUTH="demo:korslagda"                  # Valfritt: "user:lösenord" (tomt = ingen auth)
 NODE_ENV="production"
