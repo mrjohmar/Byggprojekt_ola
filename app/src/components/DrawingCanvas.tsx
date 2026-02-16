@@ -86,6 +86,19 @@ export default function DrawingCanvas({ image, onComplete, onBack }: Props) {
     }
   }
 
+  const getTouchPos = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return { x: 0, y: 0 }
+    const rect = canvas.getBoundingClientRect()
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    const touch = e.touches[0] || e.changedTouches[0]
+    return {
+      x: (touch.clientX - rect.left) * scaleX,
+      y: (touch.clientY - rect.top) * scaleY
+    }
+  }
+
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const pos = getMousePos(e)
     setStartPos(pos)
@@ -105,6 +118,31 @@ export default function DrawingCanvas({ image, onComplete, onBack }: Props) {
   }
 
   const handleMouseUp = () => {
+    setIsDrawing(false)
+  }
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
+    const pos = getTouchPos(e)
+    setStartPos(pos)
+    setIsDrawing(true)
+    setCurrentRect(null)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
+    if (!isDrawing) return
+    const pos = getTouchPos(e)
+    setCurrentRect({
+      x: Math.min(startPos.x, pos.x),
+      y: Math.min(startPos.y, pos.y),
+      width: Math.abs(pos.x - startPos.x),
+      height: Math.abs(pos.y - startPos.y)
+    })
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
     setIsDrawing(false)
   }
 
@@ -131,6 +169,9 @@ export default function DrawingCanvas({ image, onComplete, onBack }: Props) {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         />
       </div>
 

@@ -20,7 +20,20 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git remote set-url:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(ssh:*)",
+      "Bash(sshpass:*)",
+      "Bash(git config:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo edit:*)",
+      "Bash(cmdkey /list)",
+      "Bash(__NEW_LINE_0e021a7ac8782373__ echo \"\")",
+      "Bash(env)",
+      "Bash(scp:*)",
+      "Bash(openssl s_client:*)",
+      "Bash(openssl x509:*)",
+      "Bash(python3:*)"
     ]
   }
 }
