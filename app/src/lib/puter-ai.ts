@@ -14,24 +14,49 @@ const projectPrompts: Record<string, string> = {
   'övrigt': 'outdoor garden structure',
 }
 
-async function fetchImageAsBase64(url: string): Promise<string | null> {
-  try {
-    const response = await fetch(url)
-    if (!response.ok) {
-      console.error('Failed to fetch image:', response.status)
+// Ta bort svenska tecken och specialtecken som kan orsaka problem
+function sanitizePrompt(prompt: string): string {
+  return prompt
+    .replace(/å/g, 'a')
+    .replace(/ä/g, 'a')
+    .replace(/ö/g, 'o')
+    .replace(/Å/g, 'A')
+    .replace(/Ä/g, 'A')
+    .replace(/Ö/g, 'O')
+    .replace(/[^\w\s,.-]/g, '') // Ta bort andra specialtecken
+    .trim()
+}
+
+async function fetchImageAsBase64(url: string, retries = 2): Promise<string | null> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      console.log(`Pollinations fetch attempt ${attempt + 1}...`)
+      const response = await fetch(url)
+      if (!response.ok) {
+        console.error('Failed to fetch image:', response.status)
+        if (attempt < retries) {
+          await new Promise(r => setTimeout(r, 2000)) // Vänta 2 sekunder
+          continue
+        }
+        return null
+      }
+      const blob = await response.blob()
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.onerror = () => resolve(null)
+        reader.readAsDataURL(blob)
+      })
+    } catch (error) {
+      console.error('Error fetching image:', error)
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 2000))
+        continue
+      }
       return null
     }
-    const blob = await response.blob()
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result as string)
-      reader.onerror = () => resolve(null)
-      reader.readAsDataURL(blob)
-    })
-  } catch (error) {
-    console.error('Error fetching image:', error)
-    return null
   }
+  return null
 }
 
 export async function generateWithPuterAI(
@@ -46,7 +71,8 @@ export async function generateWithPuterAI(
 
   try {
     const basePrompt = projectPrompts[projectType] || projectPrompts['övrigt']
-    const fullPrompt = `${basePrompt}, ${description || ''}, ${dimensions.width}m wide, in a Swedish residential garden, summer daylight, photorealistic architectural photography, professional DIY construction`
+    const rawPrompt = `${basePrompt}, ${description || ''}, ${dimensions.width}m wide, in a Swedish residential garden, summer daylight, photorealistic architectural photography, professional DIY construction`
+    const fullPrompt = sanitizePrompt(rawPrompt)
 
     console.log('Pollinations prompt:', fullPrompt)
 
@@ -80,14 +106,15 @@ export async function regenerateWithPuterAI(
 
   try {
     const basePrompt = projectPrompts[projectType] || projectPrompts['övrigt']
-    let fullPrompt: string
+    let rawPrompt: string
 
     if (annotations && annotations.trim().length > 0) {
-      fullPrompt = `${basePrompt}, incorporating changes: ${annotations}, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
+      rawPrompt = `${basePrompt}, incorporating changes: ${annotations}, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
     } else {
-      fullPrompt = `${basePrompt}, refined version, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
+      rawPrompt = `${basePrompt}, refined version, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
     }
 
+    const fullPrompt = sanitizePrompt(rawPrompt)
     console.log('Pollinations regenerate prompt:', fullPrompt)
 
     const encodedPrompt = encodeURIComponent(fullPrompt)
