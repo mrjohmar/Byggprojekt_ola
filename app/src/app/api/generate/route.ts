@@ -29,24 +29,42 @@ export async function POST(request: Request) {
 
     // Generera bild med Stability AI
     let generatedImage: string | null = null
+    let useClientFallback = false
+    let imageProvider = 'none'
 
     if (process.env.STABILITY_API_KEY) {
-      if (image && drawing) {
-        // Inpainting - lägg in projektet i användarens bild
-        console.log('Starting inpainting...')
-        generatedImage = await inpaintWithStability({
-          originalImage: image,
-          mask: drawing,
-          projectType,
-          description: description || ''
-        })
-      }
+      try {
+        if (image && drawing) {
+          // Inpainting - lägg in projektet i användarens bild
+          console.log('Starting inpainting...')
+          generatedImage = await inpaintWithStability({
+            originalImage: image,
+            mask: drawing,
+            projectType,
+            description: description || ''
+          })
+        }
 
-      // Fallback om inpainting misslyckades
-      if (!generatedImage) {
-        console.log('Inpainting failed, falling back to generate...')
-        generatedImage = await generateWithStability(projectType, description || '', dimensions)
+        // Fallback om inpainting misslyckades
+        if (!generatedImage) {
+          console.log('Inpainting failed, falling back to generate...')
+          generatedImage = await generateWithStability(projectType, description || '', dimensions)
+        }
+
+        if (generatedImage) {
+          imageProvider = 'stability'
+        }
+      } catch (error: any) {
+        if (error?.message === 'CREDITS_DEPLETED') {
+          console.log('Stability AI credits depleted, signaling client to use fallback')
+          useClientFallback = true
+        } else {
+          console.error('Stability error:', error)
+        }
       }
+    } else {
+      // Ingen API-nyckel - använd klient-fallback
+      useClientFallback = true
     }
 
     return NextResponse.json({
@@ -55,6 +73,8 @@ export async function POST(request: Request) {
       estimatedCost,
       buildingPermit,
       generatedImage,
+      useClientFallback,
+      imageProvider,
     })
   } catch (error) {
     console.error('Generate error:', error)

@@ -29,15 +29,31 @@ export async function POST(request: Request) {
 
     // Regenerera bild med Stability AI baserat på redigerad bild
     let generatedImage: string | null = null
+    let useClientFallback = false
+    let imageProvider = 'none'
 
     if (process.env.STABILITY_API_KEY && editedImage) {
-      console.log('Starting regeneration based on edited image...')
-      generatedImage = await regenerateWithStability({
-        editedImage,
-        annotations: annotations || '',
-        projectType,
-        description: description || ''
-      })
+      try {
+        console.log('Starting regeneration based on edited image...')
+        generatedImage = await regenerateWithStability({
+          editedImage,
+          annotations: annotations || '',
+          projectType,
+          description: description || ''
+        })
+        if (generatedImage) {
+          imageProvider = 'stability'
+        }
+      } catch (error: any) {
+        if (error?.message === 'CREDITS_DEPLETED') {
+          console.log('Stability AI credits depleted, signaling client to use fallback')
+          useClientFallback = true
+        } else {
+          console.error('Stability error:', error)
+        }
+      }
+    } else if (!process.env.STABILITY_API_KEY) {
+      useClientFallback = true
     }
 
     return NextResponse.json({
@@ -46,6 +62,8 @@ export async function POST(request: Request) {
       estimatedCost,
       buildingPermit,
       generatedImage,
+      useClientFallback,
+      imageProvider,
     })
   } catch (error) {
     console.error('Regenerate error:', error)

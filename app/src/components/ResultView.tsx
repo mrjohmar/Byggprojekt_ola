@@ -24,6 +24,7 @@ interface Result {
   buildSteps: BuildStep[]
   estimatedCost: number
   buildingPermit: string
+  imageProvider?: 'stability' | 'puter' | 'none'
 }
 
 interface Props {
@@ -96,13 +97,15 @@ export default function ResultView({ result, projectData, onReset, onBack, onReg
             />
             {!imageLoading && (
               <>
-                <span className={styles.provider}>Bild: Stability AI</span>
+                <span className={styles.provider}>
+                  Bild: {result.imageProvider === 'puter' ? 'Puter AI' : 'Stability AI'}
+                </span>
                 {onRegenerate && (
                   <button
                     onClick={() => setIsEditing(true)}
                     className={styles.editButton}
                   >
-                    ✏️ Redigera
+                    Redigera
                   </button>
                 )}
               </>

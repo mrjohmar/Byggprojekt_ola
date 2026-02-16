@@ -9,7 +9,7 @@ APP_NAME="Byggprojekt_ola"              # Unikt namn (a-z, siffror, bindestreck)
 VPS_IP="65.21.58.201"           # Din VPS IP
 VPS_USER="deploy"              # Låt vara
 GITHUB_REPO=""                 # t.ex. "dittnamn/minapp" (tomt = skapa nytt)
-APP_PORT="3001"                # Unikt per app: 3001, 3002, 3003...
+APP_PORT="3002"                # Unikt per app: 3001, 3002, 3003...
 APP_SUBDIR="app"                         # Undermapp där appen ligger (tomt = rot)
 NEEDS_DB="false"               # "true" för Postgres
 NEEDS_REDIS="false"            # "true" för Redis

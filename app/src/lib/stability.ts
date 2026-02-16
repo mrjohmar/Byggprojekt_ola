@@ -90,6 +90,10 @@ export async function inpaintWithStability(params: InpaintParams): Promise<strin
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Stability API error:', response.status, errorText)
+      // Returnera felkod så vi kan hantera det i UI
+      if (response.status === 402) {
+        throw new Error('CREDITS_DEPLETED')
+      }
       return null
     }
 
@@ -204,6 +208,9 @@ export async function regenerateWithStability(params: {
     if (!response.ok) {
       const errorText = await response.text()
       console.error('Stability API error:', response.status, errorText)
+      if (response.status === 402) {
+        throw new Error('CREDITS_DEPLETED')
+      }
       return null
     }
 
@@ -248,6 +255,9 @@ export async function generateWithStability(
 
     if (!response.ok) {
       console.error('Stability generate error:', response.status)
+      if (response.status === 402) {
+        throw new Error('CREDITS_DEPLETED')
+      }
       return null
     }
 

@@ -5,6 +5,7 @@ import ImageUpload from '@/components/ImageUpload'
 import DrawingCanvas from '@/components/DrawingCanvas'
 import ProjectForm from '@/components/ProjectForm'
 import ResultView from '@/components/ResultView'
+import { generateWithPuterAI, regenerateWithPuterAI } from '@/lib/puter-ai'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -52,6 +53,21 @@ export default function Home() {
         body: JSON.stringify(updatedData)
       })
       const data = await res.json()
+
+      // Om server signalerar att vi ska använda klient-fallback (Stability saknar krediter)
+      if (data.useClientFallback && !data.generatedImage) {
+        console.log('Using Puter AI fallback for image generation...')
+        const puterImage = await generateWithPuterAI(
+          updatedData.projectType,
+          updatedData.description,
+          updatedData.dimensions
+        )
+        if (puterImage) {
+          data.generatedImage = puterImage
+          data.imageProvider = 'puter'
+        }
+      }
+
       setResult(data)
       setStep(4)
     } catch (error) {
@@ -76,6 +92,22 @@ export default function Home() {
         })
       })
       const data = await res.json()
+
+      // Om server signalerar att vi ska använda klient-fallback
+      if (data.useClientFallback && !data.generatedImage) {
+        console.log('Using Puter AI fallback for regeneration...')
+        const puterImage = await regenerateWithPuterAI(
+          editedImage,
+          annotations,
+          projectData.projectType,
+          projectData.description
+        )
+        if (puterImage) {
+          data.generatedImage = puterImage
+          data.imageProvider = 'puter'
+        }
+      }
+
       setResult(data)
     } catch (error) {
       console.error('Fel vid re-generering:', error)
