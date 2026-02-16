@@ -19,7 +19,7 @@ STABILITY_API_KEY="sk-aZschGLq24OlSHeB7hRyzUCp3UXjiUcOioibV3QBl7sPD49P"  # För 
 
 # ============================================================
 
-APPS_DIR="/apps"
+APPS_DIR="/home/deploy/apps"
 REMOTE="$VPS_USER@$VPS_IP"
 SITE_DIR="$APPS_DIR/sites/$APP_NAME"
 BUILD_DIR="$SITE_DIR${APP_SUBDIR:+/$APP_SUBDIR}"
