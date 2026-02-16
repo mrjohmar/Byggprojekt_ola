@@ -1,15 +1,5 @@
-// Puter AI - Gratis bildgenerering som fallback
-// Puter laddas via script tag i layout.tsx
-
-declare global {
-  interface Window {
-    puter?: {
-      ai: {
-        txt2img: (prompt: string, testMode?: boolean) => Promise<HTMLImageElement>
-      }
-    }
-  }
-}
+// Pollinations.ai - Gratis bildgenerering utan API-nyckel
+// https://pollinations.ai - helt gratis och öppen
 
 const projectPrompts: Record<string, string> = {
   'utekök': 'modern outdoor kitchen with built-in stainless steel gas grill, granite countertop, wooden storage cabinets underneath, professional outdoor cooking station',
@@ -24,57 +14,56 @@ const projectPrompts: Record<string, string> = {
   'övrigt': 'outdoor garden structure',
 }
 
+async function fetchImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) {
+      console.error('Failed to fetch image:', response.status)
+      return null
+    }
+    const blob = await response.blob()
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.onerror = () => resolve(null)
+      reader.readAsDataURL(blob)
+    })
+  } catch (error) {
+    console.error('Error fetching image:', error)
+    return null
+  }
+}
+
 export async function generateWithPuterAI(
   projectType: string,
   description: string,
   dimensions: { width: number; depth: number; height: number }
 ): Promise<string | null> {
-  // Vänta på att Puter ska laddas
   if (typeof window === 'undefined') {
-    console.log('Puter AI: Not available on server side')
-    return null
-  }
-
-  // Vänta upp till 5 sekunder på att Puter ska laddas
-  let attempts = 0
-  while (!window.puter && attempts < 50) {
-    await new Promise(resolve => setTimeout(resolve, 100))
-    attempts++
-  }
-
-  if (!window.puter) {
-    console.error('Puter AI: puter not loaded')
+    console.log('Pollinations: Not available on server side')
     return null
   }
 
   try {
     const basePrompt = projectPrompts[projectType] || projectPrompts['övrigt']
-    const prompt = `${basePrompt}, ${description || ''}, ${dimensions.width}m wide, in a Swedish residential garden, summer daylight, photorealistic architectural photography, professional DIY construction`
+    const fullPrompt = `${basePrompt}, ${description || ''}, ${dimensions.width}m wide, in a Swedish residential garden, summer daylight, photorealistic architectural photography, professional DIY construction`
 
-    console.log('Puter AI prompt:', prompt)
+    console.log('Pollinations prompt:', fullPrompt)
 
-    // Anropa Puter AI txt2img
-    const image = await window.puter.ai.txt2img(prompt)
+    // Pollinations.ai URL-baserad bildgenerering
+    const encodedPrompt = encodeURIComponent(fullPrompt)
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=768&nologo=true`
 
-    // Konvertera HTMLImageElement till base64
-    const canvas = document.createElement('canvas')
-    canvas.width = image.width || 1024
-    canvas.height = image.height || 768
-    const ctx = canvas.getContext('2d')
+    console.log('Fetching image from Pollinations...')
+    const base64 = await fetchImageAsBase64(imageUrl)
 
-    if (!ctx) {
-      console.error('Puter AI: Could not get canvas context')
-      return null
+    if (base64) {
+      console.log('Pollinations: Image generated successfully')
     }
-
-    ctx.drawImage(image, 0, 0)
-    const base64 = canvas.toDataURL('image/png')
-
-    console.log('Puter AI: Image generated successfully')
     return base64
 
   } catch (error) {
-    console.error('Puter AI generation error:', error)
+    console.error('Pollinations generation error:', error)
     return null
   }
 }
@@ -85,38 +74,29 @@ export async function regenerateWithPuterAI(
   projectType: string,
   description: string
 ): Promise<string | null> {
-  // För regenerering använder vi bara text-prompt baserat på annoteringarna
-  // eftersom Puter AI inte har inpainting/image-to-image
-  if (typeof window === 'undefined' || !window.puter) {
+  if (typeof window === 'undefined') {
     return null
   }
 
   try {
     const basePrompt = projectPrompts[projectType] || projectPrompts['övrigt']
-    let prompt = basePrompt
+    let fullPrompt: string
 
     if (annotations && annotations.trim().length > 0) {
-      prompt = `${basePrompt}, incorporating changes: ${annotations}, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
+      fullPrompt = `${basePrompt}, incorporating changes: ${annotations}, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
     } else {
-      prompt = `${basePrompt}, refined version, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
+      fullPrompt = `${basePrompt}, refined version, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
     }
 
-    console.log('Puter AI regenerate prompt:', prompt)
+    console.log('Pollinations regenerate prompt:', fullPrompt)
 
-    const image = await window.puter.ai.txt2img(prompt)
+    const encodedPrompt = encodeURIComponent(fullPrompt)
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=768&nologo=true`
 
-    const canvas = document.createElement('canvas')
-    canvas.width = image.width || 1024
-    canvas.height = image.height || 768
-    const ctx = canvas.getContext('2d')
-
-    if (!ctx) return null
-
-    ctx.drawImage(image, 0, 0)
-    return canvas.toDataURL('image/png')
+    return await fetchImageAsBase64(imageUrl)
 
   } catch (error) {
-    console.error('Puter AI regenerate error:', error)
+    console.error('Pollinations regenerate error:', error)
     return null
   }
 }

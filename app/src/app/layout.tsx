@@ -1,5 +1,4 @@
 import './globals.css'
-import Script from 'next/script'
 import FeedbackButton from '@/components/FeedbackButton'
 
 export const metadata = {
@@ -14,9 +13,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="sv">
-      <head>
-        <Script src="https://js.puter.com/v2/" strategy="beforeInteractive" />
-      </head>
       <body>
         {children}
         <FeedbackButton />

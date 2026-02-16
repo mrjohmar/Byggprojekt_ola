@@ -98,7 +98,7 @@ export default function ResultView({ result, projectData, onReset, onBack, onReg
             {!imageLoading && (
               <>
                 <span className={styles.provider}>
-                  Bild: {result.imageProvider === 'puter' ? 'Puter AI' : 'Stability AI'}
+                  Bild: {result.imageProvider === 'puter' ? 'Pollinations AI' : 'Stability AI'}
                 </span>
                 {onRegenerate && (
                   <button
