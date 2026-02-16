@@ -1,0 +1,199 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  text-align: center;
+}
+
+.header h3 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  color: #1e293b;
+}
+
+.header p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.tools {
+  display: flex;
+  gap: 4px;
+}
+
+.toolButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.toolButton:hover {
+  background: #f1f5f9;
+}
+
+.toolButton.active {
+  background: #1e293b;
+  color: white;
+  border-color: #1e293b;
+}
+
+.colors {
+  display: flex;
+  gap: 4px;
+}
+
+.colorButton {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.colorButton:hover {
+  transform: scale(1.15);
+}
+
+.colorButton.activeColor {
+  box-shadow: 0 0 0 3px #1e293b;
+}
+
+.lineWidths {
+  display: flex;
+  gap: 4px;
+}
+
+.widthButton {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.widthButton:hover {
+  background: #f1f5f9;
+}
+
+.widthButton.active {
+  border-color: #1e293b;
+  background: #f1f5f9;
+}
+
+.widthButton span {
+  display: block;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.actionButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.actionButton:hover {
+  background: #f1f5f9;
+}
+
+.canvasContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.canvas {
+  display: block;
+  max-width: 100%;
+  border-radius: 8px;
+  cursor: crosshair;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.overlayCanvas {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.textInput {
+  position: absolute;
+  transform: translate(-50%, -100%);
+}
+
+.textInput input {
+  padding: 8px 12px;
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  outline: none;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+@media (max-width: 600px) {
+  .toolbar {
+    justify-content: center;
+  }
+
+  .actions {
+    margin-left: 0;
+  }
+}

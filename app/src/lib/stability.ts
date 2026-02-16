@@ -145,6 +145,80 @@ async function createMaskPng(
   return maskImage
 }
 
+// Regenerera baserat på redigerad bild med annoteringar
+export async function regenerateWithStability(params: {
+  editedImage: string
+  annotations: string
+  projectType: string
+  description: string
+}): Promise<string | null> {
+  const { editedImage, annotations, projectType, description } = params
+
+  const apiKey = process.env.STABILITY_API_KEY
+  if (!apiKey) {
+    console.error('STABILITY_API_KEY not configured')
+    return null
+  }
+
+  try {
+    // Konvertera base64 data URL till buffer
+    const base64Data = editedImage.replace(/^data:image\/\w+;base64,/, '')
+    const imageBuffer = Buffer.from(base64Data, 'base64')
+
+    // Förbered bilden
+    const processedImage = await sharp(imageBuffer)
+      .resize(1024, null, { withoutEnlargement: true })
+      .png()
+      .toBuffer()
+
+    // Bygg prompt baserat på annoteringar och projekttyp
+    const basePrompt = projectPrompts[projectType] || ''
+    let fullPrompt: string
+
+    if (annotations && annotations.trim().length > 0) {
+      fullPrompt = `${basePrompt}, incorporating changes: ${annotations}, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
+    } else {
+      fullPrompt = `${basePrompt}, refined version, ${description || ''}, photorealistic, professional DIY construction, seamlessly blending with garden surroundings, daylight photography`
+    }
+
+    console.log('Regenerate prompt:', fullPrompt)
+
+    // Använd image-to-image med Structure API
+    const formData = new FormData()
+    formData.append('image', new Blob([new Uint8Array(processedImage)], { type: 'image/png' }), 'image.png')
+    formData.append('prompt', fullPrompt)
+    formData.append('control_strength', '0.7')
+    formData.append('output_format', 'png')
+
+    console.log('Calling Stability AI structure API...')
+
+    const response = await fetch('https://api.stability.ai/v2beta/stable-image/control/structure', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept': 'image/*'
+      },
+      body: formData
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Stability API error:', response.status, errorText)
+      return null
+    }
+
+    const resultBuffer = await response.arrayBuffer()
+    const base64Result = Buffer.from(resultBuffer).toString('base64')
+
+    console.log('Regeneration successful!')
+    return `data:image/png;base64,${base64Result}`
+
+  } catch (error) {
+    console.error('Stability regenerate error:', error)
+    return null
+  }
+}
+
 // Fallback: generera bild utan inpainting
 export async function generateWithStability(
   projectType: string,

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import styles from './ResultView.module.css'
+import ImageEditor from './ImageEditor'
 import { ProjectData } from '@/app/page'
 
 interface Material {
@@ -30,11 +31,20 @@ interface Props {
   projectData: ProjectData
   onReset: () => void
   onBack: () => void
+  onRegenerate?: (editedImage: string, annotations: string) => void
 }
 
-export default function ResultView({ result, projectData, onReset, onBack }: Props) {
+export default function ResultView({ result, projectData, onReset, onBack, onRegenerate }: Props) {
   const [imageLoading, setImageLoading] = useState(true)
   const [imageError, setImageError] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+
+  const handleSaveEdit = (editedImage: string, annotations: string) => {
+    setIsEditing(false)
+    if (onRegenerate) {
+      onRegenerate(editedImage, annotations)
+    }
+  }
 
   const projectLabels: Record<string, string> = {
     'utekök': 'Utekök',
@@ -47,6 +57,18 @@ export default function ResultView({ result, projectData, onReset, onBack }: Pro
     'lekstuga': 'Lekstuga',
     'växthus': 'Växthus',
     'övrigt': 'Projekt',
+  }
+
+  if (isEditing && result.generatedImage) {
+    return (
+      <div>
+        <ImageEditor
+          image={result.generatedImage}
+          onSave={handleSaveEdit}
+          onCancel={() => setIsEditing(false)}
+        />
+      </div>
+    )
   }
 
   return (
@@ -73,7 +95,17 @@ export default function ResultView({ result, projectData, onReset, onBack }: Pro
               style={{ display: imageLoading ? 'none' : 'block' }}
             />
             {!imageLoading && (
-              <span className={styles.provider}>Bild: Stability AI</span>
+              <>
+                <span className={styles.provider}>Bild: Stability AI</span>
+                {onRegenerate && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className={styles.editButton}
+                  >
+                    ✏️ Redigera
+                  </button>
+                )}
+              </>
             )}
           </>
         ) : (

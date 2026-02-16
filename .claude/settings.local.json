@@ -33,7 +33,10 @@
       "Bash(scp:*)",
       "Bash(openssl s_client:*)",
       "Bash(openssl x509:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(dir:*)",
+      "Bash(npm run build:*)",
+      "Bash(cmd.exe /c \"cd C:\\\\Users\\\\mr_jo\\\\Documents\\\\Claude\\\\Byggprojekt\\\\app && npm run build\")"
     ]
   }
 }

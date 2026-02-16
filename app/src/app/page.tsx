@@ -61,6 +61,29 @@ export default function Home() {
     }
   }
 
+  const handleRegenerate = async (editedImage: string, annotations: string) => {
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/regenerate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...projectData,
+          editedImage,
+          annotations,
+          previousImage: result?.generatedImage
+        })
+      })
+      const data = await res.json()
+      setResult(data)
+    } catch (error) {
+      console.error('Fel vid re-generering:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const goBack = () => {
     if (step > 1) setStep((step - 1) as Step)
   }
@@ -128,6 +151,7 @@ export default function Home() {
             projectData={projectData}
             onReset={reset}
             onBack={goBack}
+            onRegenerate={handleRegenerate}
           />
         )}
       </div>

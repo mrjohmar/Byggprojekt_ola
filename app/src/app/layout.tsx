@@ -1,5 +1,6 @@
 import './globals.css'
 import Script from 'next/script'
+import FeedbackButton from '@/components/FeedbackButton'
 
 export const metadata = {
   title: 'Byggplanerare',
@@ -16,7 +17,10 @@ export default function RootLayout({
       <head>
         <Script src="https://js.puter.com/v2/" strategy="beforeInteractive" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <FeedbackButton />
+      </body>
     </html>
   )
 }
