@@ -104,8 +104,12 @@ export async function inpaintWithStability(params: InpaintParams): Promise<strin
     console.log('Inpainting successful!')
     return `data:image/png;base64,${base64Result}`
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Stability inpaint error:', error)
+    // Re-throw CREDITS_DEPLETED så att API-routen kan hantera det
+    if (error?.message === 'CREDITS_DEPLETED') {
+      throw error
+    }
     return null
   }
 }
@@ -220,8 +224,12 @@ export async function regenerateWithStability(params: {
     console.log('Regeneration successful!')
     return `data:image/png;base64,${base64Result}`
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Stability regenerate error:', error)
+    // Re-throw CREDITS_DEPLETED så att API-routen kan hantera det
+    if (error?.message === 'CREDITS_DEPLETED') {
+      throw error
+    }
     return null
   }
 }
@@ -266,8 +274,12 @@ export async function generateWithStability(
 
     return `data:image/png;base64,${base64Result}`
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Stability generate error:', error)
+    // Re-throw CREDITS_DEPLETED så att API-routen kan hantera det
+    if (error?.message === 'CREDITS_DEPLETED') {
+      throw error
+    }
     return null
   }
 }
